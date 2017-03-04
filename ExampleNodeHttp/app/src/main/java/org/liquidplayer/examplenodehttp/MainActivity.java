@@ -13,41 +13,47 @@ import org.liquidplayer.javascript.JSValue;
 
 public class MainActivity extends AppCompatActivity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+		fab.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+						.setAction("Action", null).show();
+			}
+		});
 
-        loadJsAndFetchRequest();
-    }
+		loadJsAndFetchRequest();
+	}
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.menu_main, menu);
+		return true;
+	}
 
-    private void loadJsAndFetchRequest() {
-        // Get JavaScript String Resource
-        String jsString = getString(R.string.javascript);
+	private void loadJsAndFetchRequest() {
+		// Get JavaScript String Resource
+		String jsString = getString(R.string.javascript);
 
-        // Create an instance of ScriptProcess using the Application Context
-        ScriptProcess script = new ScriptProcess(getApplicationContext(), jsString, jsContext -> {
-            JSValue html = jsContext.property("html");
-            Log.i("MAIN", html.toString());
-        });
-    }
+		new ScriptProcess.Builder()
+				.setScriptId("_script_id")
+				.setJsString(jsString)
+				.onComplete(jsContext -> {
+					JSValue html = jsContext.property("html");
+					Log.i("MAIN", html.toString());
+				})
+				.onError(message -> {
+					Log.i("MAIN", "Error: " + message);
+				})
+				.buildWithContext(getApplicationContext());
+	}
 }
